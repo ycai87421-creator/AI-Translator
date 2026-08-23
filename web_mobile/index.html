@@ -25,7 +25,7 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif; }
-    body { background-color: var(--bg); color: var(--text-main); display: flex; flex-direction: column; min-height: 100vh; padding-bottom: 84px; }
+    body { background-color: var(--bg); color: var(--text-main); display: flex; flex-direction: column; min-height: 100vh; padding-bottom: 90px; }
 
     /* Top App Header */
     header {
@@ -45,12 +45,14 @@
     .header-sub { display: flex; align-items: center; gap: 6px; margin-top: 1px; }
     .model-chip { font-size: 11px; color: var(--text-muted); font-weight: 500; }
     .version-chip { font-size: 10px; color: #94a3b8; background: #f1f5f9; padding: 1px 4px; border-radius: 4px; }
-    .btn-icon-settings {
+    
+    .header-actions { display: flex; align-items: center; gap: 8px; }
+    .btn-header-icon {
       background: var(--bg);
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
-      padding: 6px 12px;
-      font-size: 13px;
+      padding: 6px 10px;
+      font-size: 12px;
       font-weight: 600;
       color: #334155;
       cursor: pointer;
@@ -59,7 +61,7 @@
       gap: 4px;
       transition: all 0.2s;
     }
-    .btn-icon-settings:active { background: #e2e8f0; transform: scale(0.96); }
+    .btn-header-icon:active { background: #e2e8f0; transform: scale(0.96); }
 
     /* Modern Floating Language Bar */
     .lang-bar-container { margin: 12px 14px 10px 14px; }
@@ -131,26 +133,27 @@
     }
     .card-title { font-size: 13px; font-weight: 700; color: #334155; display: flex; align-items: center; gap: 6px; }
     .char-badge { font-size: 11px; color: var(--text-light); font-weight: 500; }
-    .card-actions { display: flex; gap: 6px; }
+    .card-actions { display: flex; gap: 6px; align-items: center; }
     .btn-action-pill {
       background: #ffffff;
       border: 1px solid var(--border);
       color: var(--primary);
       border-radius: 6px;
-      padding: 3px 8px;
+      padding: 4px 8px;
       font-size: 12px;
       font-weight: 600;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 3px;
+      gap: 4px;
+      transition: all 0.15s;
     }
     .btn-action-pill:active { background: #f1f5f9; transform: scale(0.95); }
     .btn-action-pill.muted { color: var(--text-muted); }
 
     textarea {
       width: 100%;
-      min-height: 120px;
+      min-height: 125px;
       border: none;
       outline: none;
       padding: 12px 14px;
@@ -161,6 +164,31 @@
       background: transparent;
     }
     textarea[readonly] { color: #1e293b; background: #ffffff; cursor: text; }
+
+    /* Quick Example Phrases */
+    .quick-examples-bar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 14px;
+      overflow-x: auto;
+      white-space: nowrap;
+      -webkit-overflow-scrolling: touch;
+      margin-top: -4px;
+    }
+    .quick-examples-bar::-webkit-scrollbar { display: none; }
+    .example-tag {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 12px;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.15s;
+    }
+    .example-tag:active { background: var(--primary-light); color: var(--primary); border-color: var(--primary); }
 
     /* Fixed Bottom Action Bar */
     .footer-bar {
@@ -293,7 +321,7 @@
       color: var(--primary);
       font-size: 12px;
       font-weight: 600;
-      padding: 3px 8px;
+      padding: 4px 10px;
       border-radius: 6px;
       cursor: pointer;
       display: flex;
@@ -304,9 +332,18 @@
     .btn-fetch-models:active { transform: scale(0.95); background: #dbeafe; }
     .btn-fetch-models:disabled { opacity: 0.6; cursor: not-allowed; }
 
-    /* Model Chips */
-    .chips-label { font-size: 12px; color: var(--text-muted); margin-top: 4px; display: flex; justify-content: space-between; }
-    .chips-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; max-height: 140px; overflow-y: auto; padding-bottom: 2px; }
+    /* Model Search & Chips */
+    .model-search-box {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 12px;
+      outline: none;
+      margin-top: 4px;
+      width: 100%;
+    }
+    .chips-label { font-size: 12px; color: var(--text-muted); margin-top: 4px; display: flex; justify-content: space-between; align-items: center; }
+    .chips-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; max-height: 150px; overflow-y: auto; padding-bottom: 2px; }
     .chip {
       background: #f1f5f9;
       border: 1px solid var(--border);
@@ -339,6 +376,24 @@
     }
     .lang-item:active { transform: scale(0.97); }
     .lang-item.selected { background: var(--primary-light); border-color: var(--primary); color: var(--primary); }
+
+    /* History Drawer List */
+    .history-list { display: flex; flex-direction: column; gap: 8px; max-height: 55vh; overflow-y: auto; }
+    .history-item {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 10px 12px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: background 0.15s;
+    }
+    .history-item:active { background: var(--primary-light); }
+    .history-meta { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); font-weight: 600; }
+    .history-src { font-size: 13px; color: var(--text-main); line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .history-tgt { font-size: 13px; color: var(--primary); font-weight: 500; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
     /* Version Footer */
     .app-version-box { text-align: center; font-size: 11px; color: #94a3b8; padding-top: 4px; display: flex; justify-content: center; gap: 8px; }
@@ -375,13 +430,19 @@
       </div>
       <div class="header-sub">
         <span class="model-chip" id="currentModelDisplay">模型: gpt-4o-mini</span>
-        <span class="version-chip">v1.0.1</span>
+        <span class="version-chip">v1.0.2</span>
       </div>
     </div>
-    <button class="btn-icon-settings" onclick="openSettings()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-      设置
-    </button>
+    <div class="header-actions">
+      <button class="btn-header-icon" onclick="openHistory()" title="翻译历史">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        历史
+      </button>
+      <button class="btn-header-icon" onclick="openSettings()" title="系统设置">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        设置
+      </button>
+    </div>
   </header>
 
   <!-- Modern Floating Language Bar -->
@@ -403,8 +464,17 @@
     </div>
   </div>
 
+  <!-- Quick Examples -->
+  <div class="quick-examples-bar">
+    <span style="font-size:11px;color:#94a3b8;flex-shrink:0;">快捷示例:</span>
+    <span class="example-tag" onclick="applyExample('兄弟，什么时间能拉我进 Google Antigravity 家庭组？已经在 Bot 下单了')">拉家庭组</span>
+    <span class="example-tag" onclick="applyExample('太神了哥们，这波操作直接封神！')">太牛逼了哥们</span>
+    <span class="example-tag" onclick="applyExample('Bro, when’s my Anti-Gravity gonna pump? I already placed the order on the bot')">英文口语订单</span>
+    <span class="example-tag" onclick="applyExample('没事别客气，包在我身上！')">没事别客气</span>
+  </div>
+
   <!-- Workspace Cards -->
-  <div class="cards-container">
+  <div class="cards-container" style="margin-top:8px;">
     <!-- Input Card -->
     <div class="card">
       <div class="card-header">
@@ -412,7 +482,10 @@
           源文本 <span class="char-badge" id="inCount">0 字符</span>
         </span>
         <div class="card-actions">
-          <button class="btn-action-pill" onclick="pasteInput()">粘贴</button>
+          <button class="btn-action-pill" onclick="pasteInput()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+            粘贴
+          </button>
           <button class="btn-action-pill muted" onclick="clearInput()">清空</button>
         </div>
       </div>
@@ -426,7 +499,14 @@
           翻译结果 <span class="char-badge" id="outCount">0 字符</span>
         </span>
         <div class="card-actions">
-          <button class="btn-action-pill" onclick="copyOutput()">复制结果</button>
+          <button class="btn-action-pill muted" onclick="speakOutput()" title="朗读发音">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+            朗读
+          </button>
+          <button class="btn-action-pill" onclick="copyOutput()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            复制结果
+          </button>
         </div>
       </div>
       <textarea id="outputText" readonly placeholder="翻译结果将在此展示..."></textarea>
@@ -437,6 +517,7 @@
   <div class="footer-bar">
     <div class="status-text" id="statusBar">就绪</div>
     <button class="btn-translate-main" id="btnTranslate" onclick="startTranslation()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
       立即翻译
     </button>
   </div>
@@ -449,6 +530,22 @@
         <button class="btn-close-sheet" onclick="closeLangPicker()">&times;</button>
       </div>
       <div class="lang-grid" id="langGridContainer">
+        <!-- Injected via JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- History Bottom Sheet -->
+  <div class="sheet-overlay" id="historyOverlay" onclick="closeHistory(event)">
+    <div class="sheet-modal" onclick="event.stopPropagation()">
+      <div class="sheet-header">
+        <h2>翻译历史记录</h2>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button class="btn-action-pill muted" onclick="clearHistory()">清空历史</button>
+          <button class="btn-close-sheet" onclick="closeHistory()">&times;</button>
+        </div>
+      </div>
+      <div class="history-list" id="historyListContainer">
         <!-- Injected via JavaScript -->
       </div>
     </div>
@@ -507,7 +604,12 @@
           </button>
         </div>
         <input type="text" id="cfgModel" value="gpt-4o-mini" placeholder="输入或点击下方标签选取模型">
-        <div class="chips-label" id="modelsSectionTitle">预置 / 上游模型列表:</div>
+        <input type="text" id="modelFilterInput" class="model-search-box" placeholder="🔍 快速搜索筛选模型..." oninput="filterModelChips()" style="display:none;">
+        
+        <div class="chips-label" id="modelsSectionTitle">
+          <span>预置 / 上游模型列表:</span>
+          <span id="modelsCountBadge" style="font-size:10px;color:#94a3b8;"></span>
+        </div>
         <div class="chips-list" id="modelsChipsContainer">
           <span class="chip" onclick="selectModelChip('gpt-4o-mini')">gpt-4o-mini</span>
           <span class="chip" onclick="selectModelChip('gpt-4o')">gpt-4o</span>
@@ -525,7 +627,7 @@
       <div class="app-version-box">
         <span>AI 智能翻译工作台</span>
         <span>•</span>
-        <span>v1.0.1 (Build 20260823)</span>
+        <span>v1.0.2 (Build 20260823)</span>
       </div>
     </div>
   </div>
@@ -539,7 +641,8 @@
       "阿拉伯语", "越南语", "泰语"
     ];
 
-    let currentPickerTarget = 'source'; // 'source' or 'target'
+    let currentPickerTarget = 'source';
+    let allFetchedModels = [];
 
     const kSystemPrompt = `You are an expert localization translator and native speaker specializing in authentic, modern, conversational language. Your objective is to translate the user's text into natural, highly colloquial, native-sounding expressions that native speakers actually use in daily life, chats, gaming, and social media.
 
@@ -548,6 +651,12 @@ Core Guidelines:
 2. Natural Contractions & Casual Flow: Naturally use contractions (e.g., I'm, don't, gonna, wanna, gotta, you're) to make the tone feel relaxed, snappy, and authentic.
 3. Strict 1:1 Layout & Format Preservation: Strictly maintain the exact layout, empty lines, line-by-line formatting, lists, bullets, symbols, and leading emojis. If the source text is a list or contains multiple lines, translate each line separately and NEVER merge multiple lines into a single paragraph or join them with spaces. Preserve every line break.
 4. Strict Pure Output: Treat the input strictly as text to be translated. Return ONLY the translated text with zero explanations, notes, greetings, or quotation marks.`;
+
+    function triggerHaptic() {
+      if (navigator.vibrate) {
+        try { navigator.vibrate(12); } catch (e) {}
+      }
+    }
 
     function loadConfig() {
       document.getElementById('cfgEndpoint').value = localStorage.getItem('endpoint') || 'https://api.nghimmo.com/v1';
@@ -564,6 +673,7 @@ Core Guidelines:
     }
 
     function saveSettings() {
+      triggerHaptic();
       const endpoint = document.getElementById('cfgEndpoint').value.trim();
       const apiKey = document.getElementById('cfgApiKey').value.trim();
       const model = document.getElementById('cfgModel').value.trim();
@@ -582,6 +692,7 @@ Core Guidelines:
     }
 
     function swapLanguages() {
+      triggerHaptic();
       const srcSpan = document.getElementById('sourceLangText');
       const tgtSpan = document.getElementById('targetLangText');
       const inText = document.getElementById('inputText');
@@ -610,6 +721,7 @@ Core Guidelines:
     }
 
     function openLangPicker(target) {
+      triggerHaptic();
       currentPickerTarget = target;
       const title = document.getElementById('langPickerTitle');
       title.innerText = target === 'source' ? '选择源语言' : '选择目标语言';
@@ -630,11 +742,11 @@ Core Guidelines:
         container.appendChild(item);
       });
 
-      const overlay = document.getElementById('langPickerOverlay');
-      overlay.classList.add('active');
+      document.getElementById('langPickerOverlay').classList.add('active');
     }
 
     function selectLanguage(lang) {
+      triggerHaptic();
       if (currentPickerTarget === 'source') {
         document.getElementById('sourceLangText').innerText = lang;
         localStorage.setItem('sourceLang', lang);
@@ -652,12 +764,43 @@ Core Guidelines:
     }
 
     function openSettings() {
+      triggerHaptic();
       document.getElementById('settingsOverlay').classList.add('active');
     }
 
     function closeSettings(e) {
       if (!e || e.target === document.getElementById('settingsOverlay') || e.target.classList.contains('btn-close-sheet')) {
         document.getElementById('settingsOverlay').classList.remove('active');
+      }
+    }
+
+    function applyExample(text) {
+      triggerHaptic();
+      document.getElementById('inputText').value = text;
+      updateCounts();
+      startTranslation();
+    }
+
+    function speakOutput() {
+      const text = document.getElementById('outputText').value.trim();
+      if (!text) { showToast('暂无翻译结果可朗读'); return; }
+      triggerHaptic();
+
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        const tgtLang = document.getElementById('targetLangText').innerText;
+        if (tgtLang === '英语') utterance.lang = 'en-US';
+        else if (tgtLang === '日语') utterance.lang = 'ja-JP';
+        else if (tgtLang === '韩语') utterance.lang = 'ko-KR';
+        else if (tgtLang === '法语') utterance.lang = 'fr-FR';
+        else if (tgtLang === '德语') utterance.lang = 'de-DE';
+        else if (tgtLang === '西班牙语') utterance.lang = 'es-ES';
+        else utterance.lang = 'zh-CN';
+        window.speechSynthesis.speak(utterance);
+        showToast('正在朗读发音...');
+      } else {
+        showToast('当前设备不支持语音朗读');
       }
     }
 
@@ -674,6 +817,7 @@ Core Guidelines:
     }
 
     function selectModelChip(modelName) {
+      triggerHaptic();
       document.getElementById('cfgModel').value = modelName;
       document.querySelectorAll('.chip').forEach(c => {
         if (c.innerText === modelName) c.classList.add('active');
@@ -682,11 +826,14 @@ Core Guidelines:
     }
 
     async function fetchUpstreamModels() {
+      triggerHaptic();
       const endpoint = document.getElementById('cfgEndpoint').value.trim();
       const apiKey = document.getElementById('cfgApiKey').value.trim();
       const btn = document.getElementById('btnFetchModels');
       const container = document.getElementById('modelsChipsContainer');
       const label = document.getElementById('modelsSectionTitle');
+      const searchBox = document.getElementById('modelFilterInput');
+      const countBadge = document.getElementById('modelsCountBadge');
 
       if (!endpoint) { showToast('请先填写 API 基础地址'); return; }
 
@@ -710,19 +857,11 @@ Core Guidelines:
         const duration = ((Date.now() - start) / 1000).toFixed(2);
 
         if (res.ok && data.data && Array.isArray(data.data) && data.data.length > 0) {
-          container.innerHTML = '';
-          const modelList = data.data.map(m => m.id).sort();
-          label.innerText = `上游获取成功 (${modelList.length} 个模型, 耗时 ${duration}s):`;
-
-          const currentModel = document.getElementById('cfgModel').value;
-          modelList.forEach(mId => {
-            const chip = document.createElement('span');
-            chip.className = 'chip' + (mId === currentModel ? ' active' : '');
-            chip.innerText = mId;
-            chip.onclick = () => selectModelChip(mId);
-            container.appendChild(chip);
-          });
-          showToast(`成功获取 ${modelList.length} 个上游模型`);
+          allFetchedModels = data.data.map(m => m.id).sort();
+          searchBox.style.display = 'block';
+          renderModelChips(allFetchedModels);
+          countBadge.innerText = `(${allFetchedModels.length} 个, 耗时 ${duration}s)`;
+          showToast(`成功获取 ${allFetchedModels.length} 个上游模型`);
         } else {
           showToast('获取失败: ' + (data.error?.message || '未返回有效模型列表'));
         }
@@ -734,12 +873,91 @@ Core Guidelines:
       }
     }
 
+    function renderModelChips(list) {
+      const container = document.getElementById('modelsChipsContainer');
+      container.innerHTML = '';
+      const currentModel = document.getElementById('cfgModel').value;
+
+      list.forEach(mId => {
+        const chip = document.createElement('span');
+        chip.className = 'chip' + (mId === currentModel ? ' active' : '');
+        chip.innerText = mId;
+        chip.onclick = () => selectModelChip(mId);
+        container.appendChild(chip);
+      });
+    }
+
+    function filterModelChips() {
+      const keyword = document.getElementById('modelFilterInput').value.trim().toLowerCase();
+      if (!allFetchedModels.length) return;
+      const filtered = allFetchedModels.filter(m => m.toLowerCase().includes(keyword));
+      renderModelChips(filtered);
+    }
+
+    function saveToHistory(src, tgt, srcLang, tgtLang) {
+      try {
+        let history = JSON.parse(localStorage.getItem('trans_history') || '[]');
+        history.unshift({ src, tgt, srcLang, tgtLang, time: new Date().toLocaleTimeString() });
+        if (history.length > 30) history = history.slice(0, 30);
+        localStorage.setItem('trans_history', JSON.stringify(history));
+      } catch (e) {}
+    }
+
+    function openHistory() {
+      triggerHaptic();
+      const container = document.getElementById('historyListContainer');
+      container.innerHTML = '';
+      const history = JSON.parse(localStorage.getItem('trans_history') || '[]');
+
+      if (history.length === 0) {
+        container.innerHTML = '<div style="text-align:center;color:#94a3b8;padding:30px 0;font-size:13px;">暂无历史翻译记录</div>';
+      } else {
+        history.forEach(item => {
+          const el = document.createElement('div');
+          el.className = 'history-item';
+          el.innerHTML = `
+            <div class="history-meta">
+              <span>${item.srcLang} ➔ ${item.tgtLang}</span>
+              <span>${item.time}</span>
+            </div>
+            <div class="history-src">${item.src}</div>
+            <div class="history-tgt">${item.tgt}</div>
+          `;
+          el.onclick = () => {
+            triggerHaptic();
+            document.getElementById('inputText').value = item.src;
+            document.getElementById('outputText').value = item.tgt;
+            updateCounts();
+            closeHistory();
+            showToast('已载入历史记录');
+          };
+          container.appendChild(el);
+        });
+      }
+
+      document.getElementById('historyOverlay').classList.add('active');
+    }
+
+    function closeHistory(e) {
+      if (!e || e.target === document.getElementById('historyOverlay') || e.target.classList.contains('btn-close-sheet')) {
+        document.getElementById('historyOverlay').classList.remove('active');
+      }
+    }
+
+    function clearHistory() {
+      triggerHaptic();
+      localStorage.removeItem('trans_history');
+      openHistory();
+      showToast('历史记录已清空');
+    }
+
     function updateCounts() {
       document.getElementById('inCount').innerText = document.getElementById('inputText').value.length + ' 字符';
       document.getElementById('outCount').innerText = document.getElementById('outputText').value.length + ' 字符';
     }
 
     async function startTranslation() {
+      triggerHaptic();
       const inText = document.getElementById('inputText').value.trim();
       if (!inText) { showToast('请先输入需要翻译的文本'); return; }
 
@@ -795,6 +1013,8 @@ Core Guidelines:
           status.style.color = '#16a34a';
           updateCounts();
 
+          saveToHistory(inText, resultText, srcLang, tgtLang);
+
           if (autoCopy && resultText) {
             navigator.clipboard.writeText(resultText);
             showToast('译文已自动复制到剪贴板');
@@ -814,6 +1034,7 @@ Core Guidelines:
     }
 
     async function pasteInput() {
+      triggerHaptic();
       try {
         const text = await navigator.clipboard.readText();
         if (text) {
@@ -827,11 +1048,13 @@ Core Guidelines:
     }
 
     function clearInput() {
+      triggerHaptic();
       document.getElementById('inputText').value = '';
       updateCounts();
     }
 
     function copyOutput() {
+      triggerHaptic();
       const out = document.getElementById('outputText').value;
       if (out) {
         navigator.clipboard.writeText(out).then(() => showToast('翻译结果已复制到剪贴板'));
