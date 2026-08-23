@@ -405,7 +405,7 @@
       </div>
       <div class="header-sub">
         <span class="model-chip" id="currentModelDisplay">模型: gpt-4o-mini</span>
-        <span class="version-chip">v1.0.3</span>
+        <span class="version-chip">v1.0.4</span>
       </div>
     </div>
     <div class="header-actions">
@@ -593,7 +593,7 @@
       <div class="app-version-box">
         <span>AI 智能翻译工作台</span>
         <span>•</span>
-        <span>v1.0.3 (Build 20260823)</span>
+        <span>v1.0.4 (Build 20260823)</span>
       </div>
     </div>
   </div>
@@ -747,40 +747,59 @@ Core Guidelines:
       triggerHaptic();
 
       const tgtLang = document.getElementById('targetLangText').innerText;
+      const encoded = encodeURIComponent(text.slice(0, 250));
 
-      // 1. Android Native TTS Engine
-      if (window.AndroidTTS && typeof window.AndroidTTS.speak === 'function') {
-        window.AndroidTTS.speak(text, tgtLang);
-        showToast('正在朗读发音...');
+      let audioUrl = '';
+      if (tgtLang === '英语' || tgtLang === '自动检测') {
+        // High quality native American English voice from Youdao & Baidu
+        audioUrl = `https://dict.youdao.com/dictvoice?audio=${encoded}&type=2`;
+      } else if (tgtLang === '日语') {
+        audioUrl = `https://fanyi.baidu.com/gettts?lan=jp&text=${encoded}&spd=3&source=web`;
+      } else if (tgtLang === '韩语') {
+        audioUrl = `https://fanyi.baidu.com/gettts?lan=kor&text=${encoded}&spd=3&source=web`;
+      } else if (tgtLang === '法语') {
+        audioUrl = `https://fanyi.baidu.com/gettts?lan=fra&text=${encoded}&spd=3&source=web`;
+      } else if (tgtLang === '德语') {
+        audioUrl = `https://fanyi.baidu.com/gettts?lan=de&text=${encoded}&spd=3&source=web`;
+      } else if (tgtLang === '西班牙语') {
+        audioUrl = `https://fanyi.baidu.com/gettts?lan=spa&text=${encoded}&spd=3&source=web`;
+      } else {
+        audioUrl = `https://tts.baidu.com/text2audio?tex=${encoded}&cuid=baike&lan=ZH&ctp=1&pdt=301&vol=9&rate=32&per=0`;
+      }
+
+      showToast('正在朗读发音...');
+
+      // 1. Android Native MediaPlayer Bridge
+      if (window.AndroidTTS && typeof window.AndroidTTS.playAudioUrl === 'function') {
+        window.AndroidTTS.playAudioUrl(audioUrl);
         return;
       }
 
-      // 2. High Definition HD Audio TTS Streaming
-      try {
-        let audioUrl = '';
-        if (tgtLang === '英语' || !tgtLang) {
-          audioUrl = `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(text.slice(0, 300))}&type=2`;
-        } else {
-          let code = 'en';
-          if (tgtLang === '日语') code = 'ja';
-          else if (tgtLang === '韩语') code = 'ko';
-          else if (tgtLang === '法语') code = 'fr';
-          else if (tgtLang === '德语') code = 'de';
-          else if (tgtLang === '西班牙语') code = 'es';
-          else if (tgtLang === '俄语') code = 'ru';
-          else if (tgtLang === '简体中文' || tgtLang === '繁体中文') code = 'zh-CN';
-          audioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${code}&q=${encodeURIComponent(text.slice(0, 300))}`;
-        }
+      // 2. Android Native TextToSpeech Engine
+      if (window.AndroidTTS && typeof window.AndroidTTS.speak === 'function') {
+        window.AndroidTTS.speak(text, tgtLang);
+        return;
+      }
 
-        if (audioPlayer) {
-          audioPlayer.pause();
-          audioPlayer = null;
+      // 3. Web DOM Audio Player
+      try {
+        let player = document.getElementById('globalAudioPlayer');
+        if (!player) {
+          player = document.createElement('audio');
+          player.id = 'globalAudioPlayer';
+          player.setAttribute('playsinline', 'true');
+          document.body.appendChild(player);
         }
-        audioPlayer = new Audio(audioUrl);
-        audioPlayer.play().then(() => {
-          showToast('正在朗读发音...');
-        }).catch(() => {
-          fallbackWebSpeech(text, tgtLang);
+        player.src = audioUrl;
+        player.play().catch(() => {
+          // Backup endpoint
+          let backupUrl = (tgtLang === '英语' || tgtLang === '自动检测')
+            ? `https://tts.baidu.com/text2audio?tex=${encoded}&cuid=baike&lan=EN&ctp=1&pdt=301&vol=9&rate=32&per=4`
+            : `https://tts.baidu.com/text2audio?tex=${encoded}&cuid=baike&lan=ZH&ctp=1&pdt=301&vol=9&rate=32&per=0`;
+          player.src = backupUrl;
+          player.play().catch(() => {
+            fallbackWebSpeech(text, tgtLang);
+          });
         });
       } catch (e) {
         fallbackWebSpeech(text, tgtLang);
@@ -789,19 +808,18 @@ Core Guidelines:
 
     function fallbackWebSpeech(text, tgtLang) {
       if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        if (tgtLang === '英语') utterance.lang = 'en-US';
-        else if (tgtLang === '日语') utterance.lang = 'ja-JP';
-        else if (tgtLang === '韩语') utterance.lang = 'ko-KR';
-        else if (tgtLang === '法语') utterance.lang = 'fr-FR';
-        else if (tgtLang === '德语') utterance.lang = 'de-DE';
-        else if (tgtLang === '西班牙语') utterance.lang = 'es-ES';
-        else utterance.lang = 'zh-CN';
-        window.speechSynthesis.speak(utterance);
-        showToast('正在朗读发音...');
-      } else {
-        showToast('正在加载语音组件...');
+        try {
+          window.speechSynthesis.cancel();
+          const utterance = new SpeechSynthesisUtterance(text);
+          if (tgtLang === '英语') utterance.lang = 'en-US';
+          else if (tgtLang === '日语') utterance.lang = 'ja-JP';
+          else if (tgtLang === '韩语') utterance.lang = 'ko-KR';
+          else if (tgtLang === '法语') utterance.lang = 'fr-FR';
+          else if (tgtLang === '德语') utterance.lang = 'de-DE';
+          else if (tgtLang === '西班牙语') utterance.lang = 'es-ES';
+          else utterance.lang = 'zh-CN';
+          window.speechSynthesis.speak(utterance);
+        } catch (e) {}
       }
     }
 
