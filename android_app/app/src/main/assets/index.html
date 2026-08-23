@@ -2,170 +2,504 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>AI 智能翻译工作台</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="theme-color" content="#2563eb">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: #f1f5f9; color: #0f172a; display: flex; flex-direction: column; min-height: 100vh; }
-    header { background: #fff; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 10; }
-    .title-group h1 { font-size: 17px; font-weight: 700; color: #0f172a; }
-    .title-group span { font-size: 11px; color: #64748b; }
-    .btn-settings { background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 8px; padding: 6px 12px; font-size: 13px; font-weight: 600; cursor: pointer; color: #334155; }
-    
-    .lang-bar { background: #fff; margin: 10px 14px; padding: 8px 12px; border-radius: 12px; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-    select { flex: 1; border: none; background: transparent; font-size: 15px; font-weight: 600; color: #1e293b; outline: none; padding: 4px; }
-    .swap-btn { background: #eff6ff; border: none; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; color: #2563eb; cursor: pointer; font-weight: bold; }
-    
-    .container { flex: 1; padding: 0 14px 80px 14px; display: flex; flex-direction: column; gap: 12px; }
-    .card { background: #fff; border-radius: 12px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; overflow: hidden; }
-    .card-header { padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f8fafc; }
-    .card-title { font-size: 14px; font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 6px; }
-    .char-count { font-size: 11px; color: #94a3b8; font-weight: normal; }
-    .card-actions button { background: transparent; border: none; font-size: 12px; color: #2563eb; padding: 4px 8px; cursor: pointer; font-weight: 500; }
-    .card-actions button.gray { color: #64748b; }
-    
-    textarea { width: 100%; min-height: 120px; border: none; outline: none; padding: 12px 14px; font-size: 15px; line-height: 1.5; color: #0f172a; resize: vertical; font-family: inherit; }
-    textarea[readonly] { background: #fafafa; }
-    
-    .footer-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; padding: 10px 16px; border-top: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; gap: 12px; z-index: 10; }
-    .status-text { font-size: 12px; color: #64748b; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .btn-translate { background: #2563eb; color: #fff; border: none; border-radius: 10px; padding: 12px 24px; font-size: 15px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; }
-    .btn-translate:disabled { background: #94a3b8; }
-    
-    /* Modal */
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: flex-end; z-index: 100; }
-    .modal { background: #fff; width: 100%; max-height: 85vh; border-radius: 20px 20px 0 0; padding: 20px 18px 30px 18px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; }
-    .modal-header h2 { font-size: 17px; font-weight: 700; }
-    .form-group { display: flex; flex-direction: column; gap: 6px; }
-    .form-group label { font-size: 13px; font-weight: 600; color: #334155; }
-    .form-group input, .form-group select { border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px 12px; font-size: 14px; outline: none; }
-    .checkbox-row { display: flex; align-items: center; gap: 8px; font-size: 14px; }
-    .btn-primary { background: #2563eb; color: #fff; border: none; border-radius: 10px; padding: 12px; font-size: 15px; font-weight: 700; cursor: pointer; text-align: center; }
-    .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: rgba(15,23,42,0.9); color: #fff; padding: 8px 16px; border-radius: 20px; font-size: 13px; z-index: 200; display: none; }
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-light: #eff6ff;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --text-light: #94a3b8;
+      --border: #e2e8f0;
+      --border-focus: #3b82f6;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif; }
+    body { background-color: var(--bg); color: var(--text-main); display: flex; flex-direction: column; min-height: 100vh; padding-bottom: 84px; }
+
+    /* Top App Header */
+    header {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+    .brand-title { font-size: 17px; font-weight: 700; color: var(--text-main); letter-spacing: -0.3px; display: flex; align-items: center; gap: 6px; }
+    .brand-title .badge { font-size: 10px; background: var(--primary-light); color: var(--primary); padding: 2px 6px; border-radius: 6px; font-weight: 600; }
+    .model-chip { font-size: 11px; color: var(--text-muted); font-weight: 500; margin-top: 1px; }
+    .btn-icon-settings {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #334155;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s;
+    }
+    .btn-icon-settings:active { background: #e2e8f0; transform: scale(0.96); }
+
+    /* Modern Floating Language Bar */
+    .lang-bar-container { margin: 12px 14px 10px 14px; }
+    .lang-bar {
+      background: var(--card-bg);
+      padding: 6px 8px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .lang-btn {
+      flex: 1;
+      background: transparent;
+      border: none;
+      padding: 8px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-main);
+      cursor: pointer;
+      border-radius: var(--radius-md);
+      transition: background 0.15s;
+    }
+    .lang-btn:active { background: var(--bg); }
+    .lang-btn svg { width: 14px; height: 14px; fill: var(--text-light); }
+    .swap-btn {
+      background: var(--primary-light);
+      border: none;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: transform 0.2s, background 0.2s;
+    }
+    .swap-btn:active { transform: rotate(180deg) scale(0.92); background: #dbeafe; }
+    .swap-btn svg { width: 18px; height: 18px; fill: currentColor; }
+
+    /* Workspace Dual Cards */
+    .cards-container { padding: 0 14px; display: flex; flex-direction: column; gap: 12px; }
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .card:focus-within { border-color: var(--border-focus); }
+    .card-header {
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #f1f5f9;
+      background: #fafafa;
+    }
+    .card-title { font-size: 13px; font-weight: 700; color: #334155; display: flex; align-items: center; gap: 6px; }
+    .char-badge { font-size: 11px; color: var(--text-light); font-weight: 500; }
+    .card-actions { display: flex; gap: 6px; }
+    .btn-action-pill {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      color: var(--primary);
+      border-radius: 6px;
+      padding: 3px 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .btn-action-pill:active { background: #f1f5f9; transform: scale(0.95); }
+    .btn-action-pill.muted { color: var(--text-muted); }
+
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      border: none;
+      outline: none;
+      padding: 12px 14px;
+      font-size: 15px;
+      line-height: 1.55;
+      color: var(--text-main);
+      resize: vertical;
+      background: transparent;
+    }
+    textarea[readonly] { color: #1e293b; background: #ffffff; cursor: text; }
+
+    /* Fixed Bottom Action Bar */
+    .footer-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(12px);
+      padding: 10px 16px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      z-index: 30;
+    }
+    .status-text { font-size: 12px; color: var(--text-muted); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
+    .btn-translate-main {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 12px 26px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .btn-translate-main:active { transform: scale(0.96); opacity: 0.9; }
+    .btn-translate-main:disabled { background: #94a3b8; box-shadow: none; cursor: not-allowed; }
+
+    /* Modern Bottom Sheet Drawer */
+    .sheet-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.45);
+      backdrop-filter: blur(4px);
+      display: none;
+      justify-content: center;
+      align-items: flex-end;
+      z-index: 100;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+    .sheet-overlay.active { display: flex; opacity: 1; }
+    .sheet-modal {
+      background: #ffffff;
+      width: 100%;
+      max-height: 85vh;
+      border-radius: 24px 24px 0 0;
+      padding: 18px 20px 32px 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.12);
+      transform: translateY(100%);
+      transition: transform 0.28s cubic-bezier(0.2, 0.9, 0.3, 1);
+    }
+    .sheet-overlay.active .sheet-modal { transform: translateY(0); }
+    .sheet-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px; border-bottom: 1px solid #f1f5f9; }
+    .sheet-header h2 { font-size: 17px; font-weight: 700; color: var(--text-main); }
+    .btn-close-sheet { background: #f1f5f9; border: none; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--text-muted); cursor: pointer; }
+
+    /* Modern iOS Style Switch Rows */
+    .pref-group { background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+    .pref-row {
+      padding: 12px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+    .pref-row:not(:last-child) { border-bottom: 1px solid #edf2f7; }
+    .pref-text h4 { font-size: 14px; font-weight: 600; color: var(--text-main); }
+    .pref-text p { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+    /* Custom Toggle Switch */
+    .switch-ui {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      background: #cbd5e1;
+      border-radius: 20px;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+    .switch-ui::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: #ffffff;
+      border-radius: 50%;
+      top: 2px;
+      left: 2px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.3, 1);
+    }
+    .switch-input { display: none; }
+    .switch-input:checked + .switch-ui { background: var(--primary); }
+    .switch-input:checked + .switch-ui::after { transform: translateX(20px); }
+
+    /* Input Field Groups */
+    .field-group { display: flex; flex-direction: column; gap: 6px; }
+    .field-group label { font-size: 13px; font-weight: 600; color: #334155; }
+    .input-wrapper { position: relative; display: flex; align-items: center; }
+    .field-group input {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .field-group input:focus { border-color: var(--border-focus); }
+    .btn-eye { position: absolute; right: 10px; background: none; border: none; font-size: 12px; color: var(--primary); cursor: pointer; font-weight: 600; }
+
+    /* Model Chips */
+    .chips-label { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+    .chips-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+    .chip {
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      color: #334155;
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .chip.active { background: var(--primary-light); border-color: var(--primary); color: var(--primary); font-weight: 600; }
+
+    /* Language Selection Grid */
+    .lang-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; max-height: 50vh; overflow-y: auto; padding-right: 4px; }
+    .lang-item {
+      padding: 12px 14px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-main);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.15s;
+    }
+    .lang-item:active { transform: scale(0.97); }
+    .lang-item.selected { background: var(--primary-light); border-color: var(--primary); color: var(--primary); }
+
+    /* Toast */
+    .toast-pill {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-30px);
+      background: rgba(15, 23, 42, 0.92);
+      backdrop-filter: blur(8px);
+      color: #fff;
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 500;
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s cubic-bezier(0.2, 0.9, 0.3, 1);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    }
+    .toast-pill.show { transform: translateX(-50%) translateY(0); opacity: 1; }
   </style>
 </head>
 <body>
 
+  <!-- Top App Header -->
   <header>
-    <div class="title-group">
-      <h1>智能翻译工作台</h1>
-      <span id="currentModelDisplay">模型: gpt-4o-mini</span>
+    <div>
+      <div class="brand-title">
+        智能翻译工作台 <span class="badge">AI Studio</span>
+      </div>
+      <div class="model-chip" id="currentModelDisplay">模型: gpt-4o-mini</div>
     </div>
-    <button class="btn-settings" onclick="openSettings()">设置</button>
+    <button class="btn-icon-settings" onclick="openSettings()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+      设置
+    </button>
   </header>
 
-  <div class="lang-bar">
-    <select id="sourceLang" onchange="saveLanguageConfig()">
-      <option value="自动检测">自动检测</option>
-      <option value="英语">英语</option>
-      <option value="简体中文">简体中文</option>
-      <option value="繁体中文">繁体中文</option>
-      <option value="日语">日语</option>
-      <option value="韩语">韩语</option>
-      <option value="法语">法语</option>
-      <option value="德语">德语</option>
-      <option value="西班牙语">西班牙语</option>
-      <option value="俄语">俄语</option>
-      <option value="葡萄牙语">葡萄牙语</option>
-      <option value="意大利语">意大利语</option>
-      <option value="阿拉伯语">阿拉伯语</option>
-      <option value="越南语">越南语</option>
-      <option value="泰语">泰语</option>
-    </select>
-    <button class="swap-btn" onclick="swapLanguages()">⇄</button>
-    <select id="targetLang" onchange="saveLanguageConfig()">
-      <option value="英语">英语</option>
-      <option value="简体中文">简体中文</option>
-      <option value="繁体中文">繁体中文</option>
-      <option value="日语">日语</option>
-      <option value="韩语">韩语</option>
-      <option value="法语">法语</option>
-      <option value="德语">德语</option>
-      <option value="西班牙语">西班牙语</option>
-      <option value="俄语">俄语</option>
-      <option value="葡萄牙语">葡萄牙语</option>
-      <option value="意大利语">意大利语</option>
-      <option value="阿拉伯语">阿拉伯语</option>
-      <option value="越南语">越南语</option>
-      <option value="泰语">泰语</option>
-    </select>
+  <!-- Modern Floating Language Bar -->
+  <div class="lang-bar-container">
+    <div class="lang-bar">
+      <button class="lang-btn" onclick="openLangPicker('source')">
+        <span id="sourceLangText">自动检测</span>
+        <svg viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+      </button>
+
+      <button class="swap-btn" onclick="swapLanguages()" title="互换语言">
+        <svg viewBox="0 0 24 24"><path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"/></svg>
+      </button>
+
+      <button class="lang-btn" onclick="openLangPicker('target')">
+        <span id="targetLangText">英语</span>
+        <svg viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+      </button>
+    </div>
   </div>
 
-  <div class="container">
+  <!-- Workspace Cards -->
+  <div class="cards-container">
     <!-- Input Card -->
     <div class="card">
       <div class="card-header">
-        <span class="card-title">源文本 <span class="char-count" id="inCount">0 字符</span></span>
+        <span class="card-title">
+          源文本 <span class="char-badge" id="inCount">0 字符</span>
+        </span>
         <div class="card-actions">
-          <button onclick="pasteInput()">粘贴</button>
-          <button class="gray" onclick="clearInput()">清空</button>
+          <button class="btn-action-pill" onclick="pasteInput()">粘贴</button>
+          <button class="btn-action-pill muted" onclick="clearInput()">清空</button>
         </div>
       </div>
-      <textarea id="inputText" placeholder="输入或粘贴需要翻译的文本..." oninput="updateCounts()"></textarea>
+      <textarea id="inputText" placeholder="输入或长按粘贴需要翻译的文本..." oninput="updateCounts()"></textarea>
     </div>
 
     <!-- Output Card -->
     <div class="card">
       <div class="card-header">
-        <span class="card-title">翻译结果 <span class="char-count" id="outCount">0 字符</span></span>
+        <span class="card-title">
+          翻译结果 <span class="char-badge" id="outCount">0 字符</span>
+        </span>
         <div class="card-actions">
-          <button onclick="copyOutput()">复制结果</button>
+          <button class="btn-action-pill" onclick="copyOutput()">复制结果</button>
         </div>
       </div>
       <textarea id="outputText" readonly placeholder="翻译结果将在此展示..."></textarea>
     </div>
   </div>
 
-  <!-- Bottom Bar -->
+  <!-- Fixed Bottom Bar -->
   <div class="footer-bar">
     <div class="status-text" id="statusBar">就绪</div>
-    <button class="btn-translate" id="btnTranslate" onclick="startTranslation()">立即翻译</button>
+    <button class="btn-translate-main" id="btnTranslate" onclick="startTranslation()">
+      立即翻译
+    </button>
   </div>
 
-  <!-- Settings Modal -->
-  <div class="modal-overlay" id="settingsModal" onclick="closeSettings(event)">
-    <div class="modal" onclick="event.stopPropagation()">
-      <div class="modal-header">
+  <!-- Language Picker Bottom Sheet -->
+  <div class="sheet-overlay" id="langPickerOverlay" onclick="closeLangPicker(event)">
+    <div class="sheet-modal" onclick="event.stopPropagation()">
+      <div class="sheet-header">
+        <h2 id="langPickerTitle">选择语言</h2>
+        <button class="btn-close-sheet" onclick="closeLangPicker()">&times;</button>
+      </div>
+      <div class="lang-grid" id="langGridContainer">
+        <!-- Injected via JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Bottom Sheet -->
+  <div class="sheet-overlay" id="settingsOverlay" onclick="closeSettings(event)">
+    <div class="sheet-modal" onclick="event.stopPropagation()">
+      <div class="sheet-header">
         <h2>系统设置</h2>
-        <button style="border:none;background:none;font-size:20px;color:#64748b;" onclick="closeSettings()">&times;</button>
+        <button class="btn-close-sheet" onclick="closeSettings()">&times;</button>
       </div>
 
-      <div class="form-group checkbox-row">
-        <input type="checkbox" id="cfgPreserveFormat" checked>
-        <label for="cfgPreserveFormat">严格保持原文排版与换行格式 (1:1 结构)</label>
+      <!-- Preference Toggles -->
+      <div class="pref-group">
+        <label class="pref-row">
+          <div class="pref-text">
+            <h4>严格保持原文换行格式</h4>
+            <p>1:1 保持清单、空行及 Emoji 排版</p>
+          </div>
+          <input type="checkbox" id="cfgPreserveFormat" class="switch-input" checked>
+          <div class="switch-ui"></div>
+        </label>
+        <label class="pref-row">
+          <div class="pref-text">
+            <h4>自动复制翻译结果</h4>
+            <p>翻译完成后自动将译文送入剪贴板</p>
+          </div>
+          <input type="checkbox" id="cfgAutoCopy" class="switch-input">
+          <div class="switch-ui"></div>
+        </label>
       </div>
 
-      <div class="form-group checkbox-row">
-        <input type="checkbox" id="cfgAutoCopy">
-        <label for="cfgAutoCopy">翻译完成后自动将译文复制到剪贴板</label>
-      </div>
-
-      <div class="form-group">
+      <!-- Endpoint -->
+      <div class="field-group">
         <label>API 基础地址 (Endpoint)</label>
         <input type="text" id="cfgEndpoint" value="https://api.nghimmo.com/v1">
       </div>
 
-      <div class="form-group">
+      <!-- API Key -->
+      <div class="field-group">
         <label>API 密钥 (API Key)</label>
-        <input type="password" id="cfgApiKey" value="sk-p5xhZC3xcphvrIgOLlbXC723SA42objyg">
+        <div class="input-wrapper">
+          <input type="password" id="cfgApiKey" value="sk-p5xhZC3xcphvrIgOLlbXC723SA42objyg">
+          <button type="button" class="btn-eye" onclick="toggleKeyVisibility()">显示</button>
+        </div>
       </div>
 
-      <div class="form-group">
+      <!-- Model -->
+      <div class="field-group">
         <label>翻译大模型 (Model)</label>
         <input type="text" id="cfgModel" value="gpt-4o-mini">
+        <div class="chips-label">常用预置模型 (点击填入):</div>
+        <div class="chips-list">
+          <span class="chip" onclick="selectModelChip('gpt-4o-mini')">gpt-4o-mini</span>
+          <span class="chip" onclick="selectModelChip('gpt-4o')">gpt-4o</span>
+          <span class="chip" onclick="selectModelChip('claude-3-5-sonnet')">claude-3-5-sonnet</span>
+          <span class="chip" onclick="selectModelChip('deepseek-chat')">deepseek-chat</span>
+          <span class="chip" onclick="selectModelChip('qwen-plus')">qwen-plus</span>
+          <span class="chip" onclick="selectModelChip('gemini-1.5-flash')">gemini-1.5-flash</span>
+        </div>
       </div>
 
-      <button class="btn-primary" onclick="saveSettings()">保存设置</button>
+      <button class="btn-translate-main" style="width:100%; justify-content:center; padding:14px; margin-top:6px;" onclick="saveSettings()">
+        保存并应用
+      </button>
     </div>
   </div>
 
-  <div class="toast" id="toast"></div>
+  <div class="toast-pill" id="toastPill"></div>
 
   <script>
+    const kLanguages = [
+      "自动检测", "英语", "简体中文", "繁体中文", "日语", "韩语",
+      "法语", "德语", "西班牙语", "俄语", "葡萄牙语", "意大利语",
+      "阿拉伯语", "越南语", "泰语"
+    ];
+
+    let currentPickerTarget = 'source'; // 'source' or 'target'
+
     const kSystemPrompt = `You are an expert localization translator and native speaker specializing in authentic, modern, conversational language. Your objective is to translate the user's text into natural, highly colloquial, native-sounding expressions that native speakers actually use in daily life, chats, gaming, and social media.
 
 Core Guidelines:
@@ -180,30 +514,35 @@ Core Guidelines:
       document.getElementById('cfgModel').value = localStorage.getItem('model') || 'gpt-4o-mini';
       document.getElementById('cfgPreserveFormat').checked = localStorage.getItem('preserveFormat') !== 'false';
       document.getElementById('cfgAutoCopy').checked = localStorage.getItem('autoCopy') === 'true';
-      document.getElementById('sourceLang').value = localStorage.getItem('sourceLang') || '自动检测';
-      document.getElementById('targetLang').value = localStorage.getItem('targetLang') || '英语';
+      
+      const src = localStorage.getItem('sourceLang') || '自动检测';
+      const tgt = localStorage.getItem('targetLang') || '英语';
+      document.getElementById('sourceLangText').innerText = src;
+      document.getElementById('targetLangText').innerText = tgt;
       document.getElementById('currentModelDisplay').innerText = '模型: ' + document.getElementById('cfgModel').value;
     }
 
     function saveSettings() {
-      localStorage.setItem('endpoint', document.getElementById('cfgEndpoint').value.trim());
-      localStorage.setItem('apiKey', document.getElementById('cfgApiKey').value.trim());
-      localStorage.setItem('model', document.getElementById('cfgModel').value.trim());
-      localStorage.setItem('preserveFormat', document.getElementById('cfgPreserveFormat').checked);
-      localStorage.setItem('autoCopy', document.getElementById('cfgAutoCopy').checked);
-      document.getElementById('currentModelDisplay').innerText = '模型: ' + document.getElementById('cfgModel').value.trim();
+      const endpoint = document.getElementById('cfgEndpoint').value.trim();
+      const apiKey = document.getElementById('cfgApiKey').value.trim();
+      const model = document.getElementById('cfgModel').value.trim();
+      const preserveFormat = document.getElementById('cfgPreserveFormat').checked;
+      const autoCopy = document.getElementById('cfgAutoCopy').checked;
+
+      localStorage.setItem('endpoint', endpoint);
+      localStorage.setItem('apiKey', apiKey);
+      localStorage.setItem('model', model);
+      localStorage.setItem('preserveFormat', preserveFormat);
+      localStorage.setItem('autoCopy', autoCopy);
+
+      document.getElementById('currentModelDisplay').innerText = '模型: ' + model;
       closeSettings();
       showToast('设置已保存');
     }
 
-    function saveLanguageConfig() {
-      localStorage.setItem('sourceLang', document.getElementById('sourceLang').value);
-      localStorage.setItem('targetLang', document.getElementById('targetLang').value);
-    }
-
     function swapLanguages() {
-      const src = document.getElementById('sourceLang');
-      const tgt = document.getElementById('targetLang');
+      const srcSpan = document.getElementById('sourceLangText');
+      const tgtSpan = document.getElementById('targetLangText');
       const inText = document.getElementById('inputText');
       const outText = document.getElementById('outputText');
 
@@ -213,16 +552,88 @@ Core Guidelines:
         outText.value = tmp;
       }
 
-      if (src.value === '自动检测') {
-        src.value = tgt.value;
-        tgt.value = (tgt.value === '简体中文') ? '英语' : '简体中文';
+      let src = srcSpan.innerText;
+      let tgt = tgtSpan.innerText;
+
+      if (src === '自动检测') {
+        srcSpan.innerText = tgt;
+        tgtSpan.innerText = (tgt === '简体中文') ? '英语' : '简体中文';
       } else {
-        const temp = src.value;
-        src.value = tgt.value;
-        tgt.value = temp;
+        srcSpan.innerText = tgt;
+        tgtSpan.innerText = src;
       }
-      saveLanguageConfig();
+
+      localStorage.setItem('sourceLang', srcSpan.innerText);
+      localStorage.setItem('targetLang', tgtSpan.innerText);
       updateCounts();
+    }
+
+    function openLangPicker(target) {
+      currentPickerTarget = target;
+      const title = document.getElementById('langPickerTitle');
+      title.innerText = target === 'source' ? '选择源语言' : '选择目标语言';
+
+      const currentSelected = target === 'source'
+        ? document.getElementById('sourceLangText').innerText
+        : document.getElementById('targetLangText').innerText;
+
+      const container = document.getElementById('langGridContainer');
+      container.innerHTML = '';
+
+      kLanguages.forEach(lang => {
+        if (target === 'target' && lang === '自动检测') return;
+        const item = document.createElement('div');
+        item.className = 'lang-item' + (lang === currentSelected ? ' selected' : '');
+        item.innerHTML = `<span>${lang}</span>${lang === currentSelected ? '<span>✓</span>' : ''}`;
+        item.onclick = () => selectLanguage(lang);
+        container.appendChild(item);
+      });
+
+      const overlay = document.getElementById('langPickerOverlay');
+      overlay.classList.add('active');
+    }
+
+    function selectLanguage(lang) {
+      if (currentPickerTarget === 'source') {
+        document.getElementById('sourceLangText').innerText = lang;
+        localStorage.setItem('sourceLang', lang);
+      } else {
+        document.getElementById('targetLangText').innerText = lang;
+        localStorage.setItem('targetLang', lang);
+      }
+      closeLangPicker();
+    }
+
+    function closeLangPicker(e) {
+      if (!e || e.target === document.getElementById('langPickerOverlay') || e.target.classList.contains('btn-close-sheet')) {
+        document.getElementById('langPickerOverlay').classList.remove('active');
+      }
+    }
+
+    function openSettings() {
+      document.getElementById('settingsOverlay').classList.add('active');
+    }
+
+    function closeSettings(e) {
+      if (!e || e.target === document.getElementById('settingsOverlay') || e.target.classList.contains('btn-close-sheet')) {
+        document.getElementById('settingsOverlay').classList.remove('active');
+      }
+    }
+
+    function toggleKeyVisibility() {
+      const keyInput = document.getElementById('cfgApiKey');
+      const btn = event.target;
+      if (keyInput.type === 'password') {
+        keyInput.type = 'text';
+        btn.innerText = '隐藏';
+      } else {
+        keyInput.type = 'password';
+        btn.innerText = '显示';
+      }
+    }
+
+    function selectModelChip(modelName) {
+      document.getElementById('cfgModel').value = modelName;
     }
 
     function updateCounts() {
@@ -237,8 +648,8 @@ Core Guidelines:
       const endpoint = document.getElementById('cfgEndpoint').value.trim();
       const apiKey = document.getElementById('cfgApiKey').value.trim();
       const model = document.getElementById('cfgModel').value.trim();
-      const srcLang = document.getElementById('sourceLang').value;
-      const tgtLang = document.getElementById('targetLang').value;
+      const srcLang = document.getElementById('sourceLangText').innerText;
+      const tgtLang = document.getElementById('targetLangText').innerText;
       const preserveFormat = document.getElementById('cfgPreserveFormat').checked;
       const autoCopy = document.getElementById('cfgAutoCopy').checked;
 
@@ -313,7 +724,7 @@ Core Guidelines:
           showToast('已粘贴剪贴板内容');
         }
       } catch (e) {
-        showToast('请直接长按输入框进行粘贴');
+        showToast('请长按输入框进行粘贴');
       }
     }
 
@@ -329,14 +740,11 @@ Core Guidelines:
       }
     }
 
-    function openSettings() { document.getElementById('settingsModal').style.display = 'flex'; }
-    function closeSettings(e) { if (!e || e.target === document.getElementById('settingsModal')) document.getElementById('settingsModal').style.display = 'none'; }
-
     function showToast(msg) {
-      const t = document.getElementById('toast');
+      const t = document.getElementById('toastPill');
       t.innerText = msg;
-      t.style.display = 'block';
-      setTimeout(() => t.style.display = 'none', 2000);
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2000);
     }
 
     loadConfig();
