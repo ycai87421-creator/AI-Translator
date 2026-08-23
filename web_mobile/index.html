@@ -42,7 +42,9 @@
     }
     .brand-title { font-size: 17px; font-weight: 700; color: var(--text-main); letter-spacing: -0.3px; display: flex; align-items: center; gap: 6px; }
     .brand-title .badge { font-size: 10px; background: var(--primary-light); color: var(--primary); padding: 2px 6px; border-radius: 6px; font-weight: 600; }
-    .model-chip { font-size: 11px; color: var(--text-muted); font-weight: 500; margin-top: 1px; }
+    .header-sub { display: flex; align-items: center; gap: 6px; margin-top: 1px; }
+    .model-chip { font-size: 11px; color: var(--text-muted); font-weight: 500; }
+    .version-chip { font-size: 10px; color: #94a3b8; background: #f1f5f9; padding: 1px 4px; border-radius: 4px; }
     .btn-icon-settings {
       background: var(--bg);
       border: 1px solid var(--border);
@@ -283,9 +285,28 @@
     .field-group input:focus { border-color: var(--border-focus); }
     .btn-eye { position: absolute; right: 10px; background: none; border: none; font-size: 12px; color: var(--primary); cursor: pointer; font-weight: 600; }
 
+    /* Upstream Fetch Header & Button */
+    .field-label-row { display: flex; justify-content: space-between; align-items: center; }
+    .btn-fetch-models {
+      background: var(--primary-light);
+      border: 1px solid #bfdbfe;
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s;
+    }
+    .btn-fetch-models:active { transform: scale(0.95); background: #dbeafe; }
+    .btn-fetch-models:disabled { opacity: 0.6; cursor: not-allowed; }
+
     /* Model Chips */
-    .chips-label { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
-    .chips-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+    .chips-label { font-size: 12px; color: var(--text-muted); margin-top: 4px; display: flex; justify-content: space-between; }
+    .chips-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; max-height: 140px; overflow-y: auto; padding-bottom: 2px; }
     .chip {
       background: #f1f5f9;
       border: 1px solid var(--border);
@@ -295,7 +316,9 @@
       border-radius: 6px;
       cursor: pointer;
       font-weight: 500;
+      transition: all 0.15s;
     }
+    .chip:active { transform: scale(0.95); }
     .chip.active { background: var(--primary-light); border-color: var(--primary); color: var(--primary); font-weight: 600; }
 
     /* Language Selection Grid */
@@ -316,6 +339,9 @@
     }
     .lang-item:active { transform: scale(0.97); }
     .lang-item.selected { background: var(--primary-light); border-color: var(--primary); color: var(--primary); }
+
+    /* Version Footer */
+    .app-version-box { text-align: center; font-size: 11px; color: #94a3b8; padding-top: 4px; display: flex; justify-content: center; gap: 8px; }
 
     /* Toast */
     .toast-pill {
@@ -347,7 +373,10 @@
       <div class="brand-title">
         智能翻译工作台 <span class="badge">AI Studio</span>
       </div>
-      <div class="model-chip" id="currentModelDisplay">模型: gpt-4o-mini</div>
+      <div class="header-sub">
+        <span class="model-chip" id="currentModelDisplay">模型: gpt-4o-mini</span>
+        <span class="version-chip">v1.0.1</span>
+      </div>
     </div>
     <button class="btn-icon-settings" onclick="openSettings()">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
@@ -468,12 +497,18 @@
         </div>
       </div>
 
-      <!-- Model -->
+      <!-- Model with Upstream Fetch -->
       <div class="field-group">
-        <label>翻译大模型 (Model)</label>
-        <input type="text" id="cfgModel" value="gpt-4o-mini">
-        <div class="chips-label">常用预置模型 (点击填入):</div>
-        <div class="chips-list">
+        <div class="field-label-row">
+          <label>翻译大模型 (Model)</label>
+          <button type="button" class="btn-fetch-models" id="btnFetchModels" onclick="fetchUpstreamModels()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+            从上游获取模型
+          </button>
+        </div>
+        <input type="text" id="cfgModel" value="gpt-4o-mini" placeholder="输入或点击下方标签选取模型">
+        <div class="chips-label" id="modelsSectionTitle">预置 / 上游模型列表:</div>
+        <div class="chips-list" id="modelsChipsContainer">
           <span class="chip" onclick="selectModelChip('gpt-4o-mini')">gpt-4o-mini</span>
           <span class="chip" onclick="selectModelChip('gpt-4o')">gpt-4o</span>
           <span class="chip" onclick="selectModelChip('claude-3-5-sonnet')">claude-3-5-sonnet</span>
@@ -483,9 +518,15 @@
         </div>
       </div>
 
-      <button class="btn-translate-main" style="width:100%; justify-content:center; padding:14px; margin-top:6px;" onclick="saveSettings()">
+      <button class="btn-translate-main" style="width:100%; justify-content:center; padding:14px; margin-top:4px;" onclick="saveSettings()">
         保存并应用
       </button>
+
+      <div class="app-version-box">
+        <span>AI 智能翻译工作台</span>
+        <span>•</span>
+        <span>v1.0.1 (Build 20260823)</span>
+      </div>
     </div>
   </div>
 
@@ -634,6 +675,63 @@ Core Guidelines:
 
     function selectModelChip(modelName) {
       document.getElementById('cfgModel').value = modelName;
+      document.querySelectorAll('.chip').forEach(c => {
+        if (c.innerText === modelName) c.classList.add('active');
+        else c.classList.remove('active');
+      });
+    }
+
+    async function fetchUpstreamModels() {
+      const endpoint = document.getElementById('cfgEndpoint').value.trim();
+      const apiKey = document.getElementById('cfgApiKey').value.trim();
+      const btn = document.getElementById('btnFetchModels');
+      const container = document.getElementById('modelsChipsContainer');
+      const label = document.getElementById('modelsSectionTitle');
+
+      if (!endpoint) { showToast('请先填写 API 基础地址'); return; }
+
+      const origText = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerText = '获取中...';
+
+      let cleanUrl = endpoint.replace(/\/+$/, '').replace(/\/v1$/, '') + '/v1/models';
+      const start = Date.now();
+
+      try {
+        const res = await fetch(cleanUrl, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(apiKey ? { 'Authorization': 'Bearer ' + apiKey } : {})
+          }
+        });
+
+        const data = await res.json();
+        const duration = ((Date.now() - start) / 1000).toFixed(2);
+
+        if (res.ok && data.data && Array.isArray(data.data) && data.data.length > 0) {
+          container.innerHTML = '';
+          const modelList = data.data.map(m => m.id).sort();
+          label.innerText = `上游获取成功 (${modelList.length} 个模型, 耗时 ${duration}s):`;
+
+          const currentModel = document.getElementById('cfgModel').value;
+          modelList.forEach(mId => {
+            const chip = document.createElement('span');
+            chip.className = 'chip' + (mId === currentModel ? ' active' : '');
+            chip.innerText = mId;
+            chip.onclick = () => selectModelChip(mId);
+            container.appendChild(chip);
+          });
+          showToast(`成功获取 ${modelList.length} 个上游模型`);
+        } else {
+          showToast('获取失败: ' + (data.error?.message || '未返回有效模型列表'));
+        }
+      } catch (err) {
+        showToast('上游连接失败: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = origText;
+      }
     }
 
     function updateCounts() {
