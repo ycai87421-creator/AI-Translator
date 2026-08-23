@@ -1,0 +1,43 @@
+# Build outputs
+x64/
+Debug/
+Release/
+*.exe
+*.pdb
+*.obj
+*.iobj
+*.ipdb
+*.tlog
+*.idb
+*.ilk
+*.log
+TranslatorWin32/x64/
+TranslatorWin32/Debug/
+TranslatorWin32/Release/
+build-direct/
+
+# Local sensitive configs and keys
+translator_config.ini
+*.id_ed25519
+*.pem
+*.key
+
+# Android build outputs
+android_app/.gradle/
+android_app/app/build/
+android_app/build/
+android_app/local.properties
+.idea/
+*.iml
+
+# Flutter build outputs
+mobile_app/build/
+mobile_app/.dart_tool/
+mobile_app/.flutter-plugins
+mobile_app/.flutter-plugins-dependencies
+mobile_app/.packages
+
+# Temporary files
+scratch/
+*.tmp
+*.bin
