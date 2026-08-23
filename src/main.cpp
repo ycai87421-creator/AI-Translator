@@ -763,7 +763,7 @@ void LayoutControls(HWND window) {
 
     // Header items
     MoveWindow(g_app.titleLabel, marginX, headerY, 140, 24, TRUE);
-    MoveWindow(g_app.badgeLabel, marginX + 144, headerY + 2, 74, 18, TRUE);
+    MoveWindow(g_app.badgeLabel, marginX + 144, headerY + 2, 96, 18, TRUE);
     MoveWindow(g_app.subtitleLabel, marginX, headerY + 24, std::max(180, width - marginX * 2 - 80), 16, TRUE);
 
     const int topBtnW = 68;
@@ -781,8 +781,8 @@ void LayoutControls(HWND window) {
     curX += 50;
     MoveWindow(g_app.source, curX, tbInnerY, 120, 240, TRUE);
     curX += 126;
-    MoveWindow(g_app.swapButton, curX, tbInnerY, 52, tbCtrlH, TRUE);
-    curX += 58;
+    MoveWindow(g_app.swapButton, curX, tbInnerY, 62, tbCtrlH, TRUE);
+    curX += 68;
     MoveWindow(g_app.targetLabel, curX, tbInnerY + 4, 60, 18, TRUE);
     curX += 62;
     MoveWindow(g_app.target, curX, tbInnerY, 120, 240, TRUE);
@@ -1361,7 +1361,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT message, WPARAM wParam, LPARAM lPa
                                            0, 0, 0, 0, window, nullptr, GetModuleHandleW(nullptr), nullptr);
         ApplyFont(g_app.titleLabel, g_app.fontTitle);
 
-        g_app.badgeLabel = CreateWindowExW(0, L"STATIC", L"AI Studio 2.0", WS_CHILD | WS_VISIBLE,
+        g_app.badgeLabel = CreateWindowExW(0, L"STATIC", L"AI Studio v1.0.1", WS_CHILD | WS_VISIBLE,
                                            0, 0, 0, 0, window, nullptr, GetModuleHandleW(nullptr), nullptr);
         ApplyFont(g_app.badgeLabel, g_app.fontSmall);
 
@@ -1384,7 +1384,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT message, WPARAM wParam, LPARAM lPa
                                        GetModuleHandleW(nullptr), nullptr);
         ApplyFont(g_app.source, g_app.fontNormal);
 
-        g_app.swapButton = CreateWindowExW(0, L"BUTTON", L"互换", WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON,
+        g_app.swapButton = CreateWindowExW(0, L"BUTTON", L"⇄ 互换", WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON,
                                            0, 0, 0, 0, window, reinterpret_cast<HMENU>(static_cast<INT_PTR>(ID_SWAP)),
                                            GetModuleHandleW(nullptr), nullptr);
         ApplyFont(g_app.swapButton, g_app.fontNormal);
@@ -1519,15 +1519,28 @@ LRESULT CALLBACK WindowProc(HWND window, UINT message, WPARAM wParam, LPARAM lPa
         const int cardGap = 12;
         const int totalCardWidth = width - marginX * 2;
         const int cardWidth = (totalCardWidth - cardGap) / 2;
+        const int cardHeaderH = 32;
+
+        HBRUSH cardHeaderBrush = CreateSolidBrush(RGB(248, 250, 252));
 
         // Left Card
         RECT leftCardRect{marginX, wsTop, marginX + cardWidth, wsTop + wsHeight};
-        RoundRect(hdc, leftCardRect.left, leftCardRect.top, leftCardRect.right, leftCardRect.bottom, 10, 10);
+        RoundRect(hdc, leftCardRect.left, leftCardRect.top, leftCardRect.right, leftCardRect.bottom, 12, 12);
+        RECT leftHeaderRect{marginX + 1, wsTop + 1, marginX + cardWidth - 1, wsTop + cardHeaderH};
+        FillRect(hdc, &leftHeaderRect, cardHeaderBrush);
+        MoveToEx(hdc, marginX, wsTop + cardHeaderH, nullptr);
+        LineTo(hdc, marginX + cardWidth, wsTop + cardHeaderH);
 
         // Right Card
         const int card2X = marginX + cardWidth + cardGap;
         RECT rightCardRect{card2X, wsTop, card2X + cardWidth, wsTop + wsHeight};
-        RoundRect(hdc, rightCardRect.left, rightCardRect.top, rightCardRect.right, rightCardRect.bottom, 10, 10);
+        RoundRect(hdc, rightCardRect.left, rightCardRect.top, rightCardRect.right, rightCardRect.bottom, 12, 12);
+        RECT rightHeaderRect{card2X + 1, wsTop + 1, card2X + cardWidth - 1, wsTop + cardHeaderH};
+        FillRect(hdc, &rightHeaderRect, cardHeaderBrush);
+        MoveToEx(hdc, card2X, wsTop + cardHeaderH, nullptr);
+        LineTo(hdc, card2X + cardWidth, wsTop + cardHeaderH);
+
+        DeleteObject(cardHeaderBrush);
 
         // Restore GDI Objects
         SelectObject(hdc, oldPen);
