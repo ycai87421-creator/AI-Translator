@@ -153,7 +153,7 @@
 
     textarea {
       width: 100%;
-      min-height: 125px;
+      min-height: 130px;
       border: none;
       outline: none;
       padding: 12px 14px;
@@ -164,31 +164,6 @@
       background: transparent;
     }
     textarea[readonly] { color: #1e293b; background: #ffffff; cursor: text; }
-
-    /* Quick Example Phrases */
-    .quick-examples-bar {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 0 14px;
-      overflow-x: auto;
-      white-space: nowrap;
-      -webkit-overflow-scrolling: touch;
-      margin-top: -4px;
-    }
-    .quick-examples-bar::-webkit-scrollbar { display: none; }
-    .example-tag {
-      background: #ffffff;
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      font-size: 11px;
-      padding: 4px 10px;
-      border-radius: 12px;
-      cursor: pointer;
-      flex-shrink: 0;
-      transition: all 0.15s;
-    }
-    .example-tag:active { background: var(--primary-light); color: var(--primary); border-color: var(--primary); }
 
     /* Fixed Bottom Action Bar */
     .footer-bar {
@@ -430,7 +405,7 @@
       </div>
       <div class="header-sub">
         <span class="model-chip" id="currentModelDisplay">模型: gpt-4o-mini</span>
-        <span class="version-chip">v1.0.2</span>
+        <span class="version-chip">v1.0.3</span>
       </div>
     </div>
     <div class="header-actions">
@@ -464,17 +439,8 @@
     </div>
   </div>
 
-  <!-- Quick Examples -->
-  <div class="quick-examples-bar">
-    <span style="font-size:11px;color:#94a3b8;flex-shrink:0;">快捷示例:</span>
-    <span class="example-tag" onclick="applyExample('兄弟，什么时间能拉我进 Google Antigravity 家庭组？已经在 Bot 下单了')">拉家庭组</span>
-    <span class="example-tag" onclick="applyExample('太神了哥们，这波操作直接封神！')">太牛逼了哥们</span>
-    <span class="example-tag" onclick="applyExample('Bro, when’s my Anti-Gravity gonna pump? I already placed the order on the bot')">英文口语订单</span>
-    <span class="example-tag" onclick="applyExample('没事别客气，包在我身上！')">没事别客气</span>
-  </div>
-
   <!-- Workspace Cards -->
-  <div class="cards-container" style="margin-top:8px;">
+  <div class="cards-container">
     <!-- Input Card -->
     <div class="card">
       <div class="card-header">
@@ -627,7 +593,7 @@
       <div class="app-version-box">
         <span>AI 智能翻译工作台</span>
         <span>•</span>
-        <span>v1.0.2 (Build 20260823)</span>
+        <span>v1.0.3 (Build 20260823)</span>
       </div>
     </div>
   </div>
@@ -643,6 +609,7 @@
 
     let currentPickerTarget = 'source';
     let allFetchedModels = [];
+    let audioPlayer = null;
 
     const kSystemPrompt = `You are an expert localization translator and native speaker specializing in authentic, modern, conversational language. Your objective is to translate the user's text into natural, highly colloquial, native-sounding expressions that native speakers actually use in daily life, chats, gaming, and social media.
 
@@ -774,22 +741,56 @@ Core Guidelines:
       }
     }
 
-    function applyExample(text) {
-      triggerHaptic();
-      document.getElementById('inputText').value = text;
-      updateCounts();
-      startTranslation();
-    }
-
     function speakOutput() {
       const text = document.getElementById('outputText').value.trim();
       if (!text) { showToast('暂无翻译结果可朗读'); return; }
       triggerHaptic();
 
+      const tgtLang = document.getElementById('targetLangText').innerText;
+
+      // 1. Android Native TTS Engine
+      if (window.AndroidTTS && typeof window.AndroidTTS.speak === 'function') {
+        window.AndroidTTS.speak(text, tgtLang);
+        showToast('正在朗读发音...');
+        return;
+      }
+
+      // 2. High Definition HD Audio TTS Streaming
+      try {
+        let audioUrl = '';
+        if (tgtLang === '英语' || !tgtLang) {
+          audioUrl = `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(text.slice(0, 300))}&type=2`;
+        } else {
+          let code = 'en';
+          if (tgtLang === '日语') code = 'ja';
+          else if (tgtLang === '韩语') code = 'ko';
+          else if (tgtLang === '法语') code = 'fr';
+          else if (tgtLang === '德语') code = 'de';
+          else if (tgtLang === '西班牙语') code = 'es';
+          else if (tgtLang === '俄语') code = 'ru';
+          else if (tgtLang === '简体中文' || tgtLang === '繁体中文') code = 'zh-CN';
+          audioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${code}&q=${encodeURIComponent(text.slice(0, 300))}`;
+        }
+
+        if (audioPlayer) {
+          audioPlayer.pause();
+          audioPlayer = null;
+        }
+        audioPlayer = new Audio(audioUrl);
+        audioPlayer.play().then(() => {
+          showToast('正在朗读发音...');
+        }).catch(() => {
+          fallbackWebSpeech(text, tgtLang);
+        });
+      } catch (e) {
+        fallbackWebSpeech(text, tgtLang);
+      }
+    }
+
+    function fallbackWebSpeech(text, tgtLang) {
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
         const utterance = new SpeechSynthesisUtterance(text);
-        const tgtLang = document.getElementById('targetLangText').innerText;
         if (tgtLang === '英语') utterance.lang = 'en-US';
         else if (tgtLang === '日语') utterance.lang = 'ja-JP';
         else if (tgtLang === '韩语') utterance.lang = 'ko-KR';
@@ -800,7 +801,7 @@ Core Guidelines:
         window.speechSynthesis.speak(utterance);
         showToast('正在朗读发音...');
       } else {
-        showToast('当前设备不支持语音朗读');
+        showToast('正在加载语音组件...');
       }
     }
 
